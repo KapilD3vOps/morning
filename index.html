@@ -1027,34 +1027,35 @@
         <span class="mark" style="color:var(--accent);">◆</span>
       </div>
 
-      <div class="arsenal-grid">
+      <div class="arsenal-grid" id="arsenal-grid">
         <div>
           <p class="lbl">Last</p>
-          <div class="score"><span class="win">Arsenal 3</span> · Leeds 1</div>
-          <p class="meta">Sat 16 Aug · Premier League · H</p>
+          <div class="score" id="ars-last"><span class="win">Arsenal 3</span> · Coventry 0</div>
+          <p class="meta" id="ars-last-meta">Fri 21 Aug · Premier League · H</p>
         </div>
         <div>
           <p class="lbl">Next</p>
-          <div class="fixture"><strong>Newcastle</strong> (A)</div>
-          <p class="meta">Tomorrow · 17:30 · Sky Sports</p>
+          <div class="fixture" id="ars-next"><strong>Aston Villa</strong> (A)</div>
+          <p class="meta" id="ars-next-meta">Mon 31 Aug · 20:00 · Sky Sports</p>
         </div>
       </div>
 
       <div class="arsenal-news">
-        <p><span class="tag">Team news</span>Ødegaard passed fit for Newcastle after Wednesday's training. Saliba a doubt with a minor calf strain; Timber steps in if needed.</p>
+        <p><span class="tag">Form</span>Opened the season with a convincing home win over newly-promoted Coventry. Villa Park next on the Bank Holiday Monday — Arsenal 64% to take all three points on current odds.</p>
       </div>
 
       <table class="arsenal-table" aria-label="Premier League table">
         <thead>
           <tr><th style="width:22px;">#</th><th>Club</th><th>P</th><th>GD</th><th>Pts</th></tr>
         </thead>
-        <tbody>
-          <tr><td>1</td><td>Liverpool</td><td>1</td><td>+3</td><td>3</td></tr>
-          <tr class="us"><td>2</td><td>Arsenal</td><td>1</td><td>+2</td><td>3</td></tr>
-          <tr><td>3</td><td>Man City</td><td>1</td><td>+2</td><td>3</td></tr>
-          <tr><td>4</td><td>Chelsea</td><td>1</td><td>+1</td><td>3</td></tr>
+        <tbody id="ars-table-body">
+          <tr><td>1</td><td>Brighton</td><td>1</td><td>+2</td><td>3</td></tr>
+          <tr class="us"><td>2</td><td>Arsenal</td><td>1</td><td>+3</td><td>3</td></tr>
+          <tr><td>3</td><td>Brentford</td><td>1</td><td>+2</td><td>3</td></tr>
+          <tr><td>4</td><td>Everton</td><td>1</td><td>+1</td><td>3</td></tr>
         </tbody>
       </table>
+      <p class="mkt-note" style="margin: 8px 0 0; font-size: 11px;" id="ars-table-note">Matchday 1 · separated on goal difference · updated weekly</p>
     </section>
 
     <!-- Transport -->
@@ -1797,6 +1798,92 @@
     document.getElementById("book-preview-hint")
   );
 
+  /* ─── Arsenal — LIVE via football-data.org (through Worker) ──
+     Second Cloudflare Worker holds the football-data.org key
+     server-side. Returns last result, next fixture, top-of-table.
+     Until ARSENAL_WORKER_URL is set, the static markup already in
+     the page stays (currently correct: Coventry result, Villa next).
+     ─────────────────────────────────────────────────────────── */
+  const ARSENAL_WORKER_URL = ""; // ← paste your rhia-arsenal Worker URL here
+  const ARSENAL_CACHE_KEY = "rhia-arsenal-cache-v1";
+  const ARSENAL_CACHE_MS = 30 * 60 * 1000; // 30 min
+
+  function fmtMatchDate(iso) {
+    const d = new Date(iso);
+    const day = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+    return day;
+  }
+  function fmtKickoff(iso) {
+    const d = new Date(iso);
+    const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+    return `${new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })} · ${time}`;
+  }
+
+  function renderArsenal(data) {
+    if (!data) return;
+
+    // Last result
+    if (data.last) {
+      const l = data.last;
+      const arsSide = l.arsHome ? "H" : "A";
+      const scoreClass = l.won ? "win" : "";
+      const homeSpan = l.arsHome
+        ? `<span class="${scoreClass}">${l.home} ${l.homeScore}</span>`
+        : `${l.home} ${l.homeScore}`;
+      const awaySpan = !l.arsHome
+        ? `<span class="${scoreClass}">${l.away} ${l.awayScore}</span>`
+        : `${l.away} ${l.awayScore}`;
+      document.getElementById("ars-last").innerHTML = `${homeSpan} · ${awaySpan}`;
+      document.getElementById("ars-last-meta").textContent =
+        `${fmtMatchDate(l.date)} · ${l.competition} · ${arsSide}`;
+    }
+
+    // Next fixture
+    if (data.next) {
+      const n = data.next;
+      document.getElementById("ars-next").innerHTML =
+        `<strong>${n.opponent}</strong> (${n.home ? "H" : "A"})`;
+      document.getElementById("ars-next-meta").textContent = fmtKickoff(n.date);
+    }
+
+    // Table
+    if (data.table && data.table.length) {
+      const rows = data.table.map(r => {
+        const gd = r.gd > 0 ? `+${r.gd}` : `${r.gd}`;
+        return `<tr class="${r.isArsenal ? "us" : ""}"><td>${r.rank}</td><td>${r.team}</td><td>${r.played}</td><td>${gd}</td><td>${r.points}</td></tr>`;
+      }).join("");
+      document.getElementById("ars-table-body").innerHTML = rows;
+      const mw = data.table[0]?.played || 1;
+      document.getElementById("ars-table-note").textContent =
+        `After ${mw} match${mw === 1 ? "" : "es"} · live from football-data.org`;
+    }
+  }
+
+  async function loadArsenal() {
+    if (!ARSENAL_WORKER_URL) return; // not configured — static content stays
+
+    try {
+      const cached = JSON.parse(localStorage.getItem(ARSENAL_CACHE_KEY) || "null");
+      if (cached && Date.now() - cached.fetchedAt < ARSENAL_CACHE_MS) {
+        renderArsenal(cached.data);
+        return;
+      }
+    } catch { /* ignore */ }
+
+    try {
+      const res = await fetch(ARSENAL_WORKER_URL, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error(`Arsenal worker ${res.status}`);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      localStorage.setItem(ARSENAL_CACHE_KEY, JSON.stringify({ data, fetchedAt: Date.now() }));
+      renderArsenal(data);
+    } catch (err) {
+      // Worker unreachable — keep the static (correct) fallback in place.
+    }
+  }
+
+  loadArsenal();
+
   /* ─── Currently reading ─────────────────────────── */
   function renderReading() {
     const box = document.getElementById("reading-now");
@@ -1863,7 +1950,7 @@
 
   const WEEK_AHEAD = [
     { when: "Tonight", what: "Yoshitomo Nara at the Hayward Gallery", where: "Southbank · £22 · closes 31 Aug" },
-    { when: "Saturday", what: "Arsenal away at Newcastle", where: "St James' Park · 17:30 · Sky Sports" },
+    { when: "Mon 31 Aug", what: "Arsenal away at Aston Villa", where: "Villa Park · 20:00 · Sky Sports" },
     { when: "Sunday", what: "Columbia Road Flower Market + Broadway Market lunch", where: "E2 · from 8am" },
     { when: "Mon 25 Aug", what: "Summer Bank Holiday — no work", where: "Massimo Dutti Bank Holiday sale peaks" },
     { when: "Wed 27 Aug", what: "Notting Hill Carnival family day", where: "W10 · from 10am" }
