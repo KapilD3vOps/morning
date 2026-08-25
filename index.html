@@ -1804,19 +1804,19 @@
      Until ARSENAL_WORKER_URL is set, the static markup already in
      the page stays (currently correct: Coventry result, Villa next).
      ─────────────────────────────────────────────────────────── */
-  const ARSENAL_WORKER_URL = ""; // ← paste your rhia-arsenal Worker URL here
+  const ARSENAL_WORKER_URL = "https://rhia-arsenal.jakesymes1.workers.dev"; // football-data.org via Worker (key server-side)
   const ARSENAL_CACHE_KEY = "rhia-arsenal-cache-v1";
   const ARSENAL_CACHE_MS = 30 * 60 * 1000; // 30 min
 
   function fmtMatchDate(iso) {
     const d = new Date(iso);
-    const day = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
-    return day;
+    return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/London" });
   }
   function fmtKickoff(iso) {
     const d = new Date(iso);
-    const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
-    return `${new Date(iso).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })} · ${time}`;
+    const day = d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short", timeZone: "Europe/London" });
+    const time = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/London" });
+    return `${day} · ${time}`;
   }
 
   function renderArsenal(data) {
