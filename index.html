@@ -1272,12 +1272,12 @@
      Morning Dashboard for Rhia — v2
      Single file, mobile-first, works offline (localStorage).
 
-     ── Live-data plan (all mocked below, tagged MOCK) ──
-       Weather:   Open-Meteo (no key)      https://open-meteo.com
-       TfL:       TfL Unified API          https://api.tfl.gov.uk
-       News:      Guardian Open Platform / RSS
-       Football:  football-data.org (free)
-       Markets:   Yahoo Finance chart API
+     ── Live-data status ──
+       TfL:       LIVE — Northern line via TfL Unified API (no key)
+       Weather:   MOCK — swap for Open-Meteo (no key)   https://open-meteo.com
+       News:      MOCK — swap for Guardian Open Platform / RSS
+       Football:  MOCK — swap for football-data.org (free)
+       Markets:   MOCK — swap for Yahoo Finance chart API
      ===================================================== */
 
   /* ─── SHOPS_DATA — EDIT WEEKLY ──────────────────────
@@ -1438,21 +1438,98 @@
     `${WEATHER.tempAtLeave}<span class="unit">°C</span>`;
   document.getElementById("weather-sub").textContent = WEATHER.condition;
 
-  /* ─── Northern line status (MOCK — wire TfL) ────── */
-  const NL_STATUS = "Good service"; // MOCK
-  const NL_SUB = "Both branches, all stations";
+  /* ─── Northern line status — LIVE via TfL Unified API ─────
+     No key required. Docs: https://api.tfl.gov.uk
+     Endpoint: /Line/northern/Status
+     Cached in localStorage for 5 min so a quick re-open of the
+     tab (or a flaky connection) doesn't refetch unnecessarily,
+     and so the page still shows *something* if TfL is briefly
+     unreachable.
+     ─────────────────────────────────────────────────────── */
+  const TFL_CACHE_KEY = "rhia-tfl-cache-v1";
+  const TFL_CACHE_MS = 5 * 60 * 1000;
   const nlDot = document.getElementById("nl-dot");
   const alertBanner = document.getElementById("alert-banner");
-  if (NL_STATUS === "Good service") {
-    nlDot.classList.remove("warn","bad");
-  } else if (/severe|suspended|closed/i.test(NL_STATUS)) {
-    nlDot.classList.add("bad");
-    alertBanner.classList.add("active");
-    document.getElementById("alert-text").textContent =
-      `Northern line — ${NL_STATUS.toLowerCase()}. Consider Victoria via bus, or Uber.`;
-  } else {
-    nlDot.classList.add("warn");
+
+  function applyLineStatus(statusText, reasonText) {
+    const nlStatusEl = document.getElementById("nl-status");
+    const nlStatus2El = document.getElementById("nl-status-2");
+    const nlSubEl = document.getElementById("nl-sub");
+
+    nlStatusEl.textContent = statusText;
+    nlStatus2El.textContent = statusText;
+    nlDot.classList.remove("warn", "bad");
+    nlStatus2El.classList.remove("warn", "bad");
+
+    const lower = statusText.toLowerCase();
+
+    if (lower === "good service") {
+      nlSubEl.textContent = "Both branches, all stations";
+      alertBanner.classList.remove("active");
+    } else if (/severe|suspended|part closure|closed/.test(lower)) {
+      nlDot.classList.add("bad");
+      nlStatus2El.classList.add("bad");
+      nlSubEl.textContent = reasonText || "Check before you travel";
+      alertBanner.classList.add("active");
+      document.getElementById("alert-text").textContent =
+        `Northern line — ${lower}. ${reasonText ? reasonText + " " : ""}Consider Victoria line via bus, or a cab.`;
+    } else {
+      // Minor delays, reduced service, planned closure, part suspended, etc.
+      nlDot.classList.add("warn");
+      nlStatus2El.classList.add("warn");
+      nlSubEl.textContent = reasonText || "Check before you travel";
+      alertBanner.classList.remove("active");
+    }
   }
+
+  async function loadNorthernLineStatus() {
+    // Try cache first
+    try {
+      const cached = JSON.parse(localStorage.getItem(TFL_CACHE_KEY) || "null");
+      if (cached && Date.now() - cached.fetchedAt < TFL_CACHE_MS) {
+        applyLineStatus(cached.status, cached.reason);
+        return;
+      }
+    } catch { /* ignore bad cache */ }
+
+    try {
+      const res = await fetch("https://api.tfl.gov.uk/Line/northern/Status", {
+        signal: AbortSignal.timeout(6000)
+      });
+      if (!res.ok) throw new Error(`TfL API ${res.status}`);
+      const data = await res.json();
+      const statuses = data?.[0]?.lineStatuses || [];
+      if (statuses.length === 0) throw new Error("No status data");
+
+      // If multiple statuses (e.g. one branch affected), show the worst one.
+      const worst = statuses.reduce((a, b) => (a.statusSeverity < b.statusSeverity ? a : b));
+      const statusText = worst.statusSeverityDescription || "Good Service";
+      const reasonText = worst.reason ? worst.reason.replace(/^Northern Line:\s*/i, "") : "";
+
+      localStorage.setItem(TFL_CACHE_KEY, JSON.stringify({
+        status: statusText, reason: reasonText, fetchedAt: Date.now()
+      }));
+      applyLineStatus(statusText, reasonText);
+    } catch (err) {
+      // Fetch failed (offline, TfL down, blocked, etc.) — fall back
+      // to whatever we last knew, or a neutral "unavailable" state.
+      // We deliberately do NOT show a fake "Good service" here, since
+      // silently fabricating status is worse than admitting we don't know.
+      try {
+        const cached = JSON.parse(localStorage.getItem(TFL_CACHE_KEY) || "null");
+        if (cached) {
+          applyLineStatus(cached.status, cached.reason + " (last known)");
+          return;
+        }
+      } catch { /* no cache available */ }
+      document.getElementById("nl-status").textContent = "Unavailable";
+      document.getElementById("nl-status-2").textContent = "Unavailable";
+      document.getElementById("nl-sub").textContent = "Couldn't reach TfL — check the app";
+      nlDot.classList.add("warn");
+    }
+  }
+
+  loadNorthernLineStatus();
 
   /* ─── Shops ─────────────────────────────────────── */
   function renderShops() {
