@@ -444,6 +444,24 @@
     padding: 12px 10px;
     color: #1F1811;
     position: relative;
+    text-decoration: none;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .book .cover:hover, .book .cover:focus-visible {
+    box-shadow: 0 10px 22px -8px rgba(27,22,19,0.45), inset 0 0 0 1px rgba(0,0,0,0.08);
+    transform: translateY(-2px);
+  }
+  /* When a real jacket loads, it fills the cover and hides the text fallback */
+  .book .cover.has-image { padding: 0; background: #ddd; }
+  .book .cover.has-image .ct,
+  .book .cover.has-image .ca,
+  .book .cover.has-image::before { display: none; }
+  .book .cover .jacket {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .book .cover::before {
     content: ""; position: absolute;
@@ -462,6 +480,19 @@
     letter-spacing: 0.2em; text-transform: uppercase;
     opacity: 0.75;
   }
+  .book-preview-hint {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 10px 0 0;
+  }
+  .book-preview-hint a {
+    color: inherit; text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+  }
+  .book-preview-hint.empty { display: none; }
   .book .meta .why {
     font-family: var(--sans);
     font-size: 9px; font-weight: 600;
@@ -1061,16 +1092,17 @@
         <span class="mark">❦</span>
       </div>
       <div class="book">
-        <div class="cover" aria-hidden="true">
+        <a class="cover" id="book-cover" href="#" target="_blank" rel="noopener" aria-label="Preview The Safekeep on Google Books">
           <div class="ct">The<br>Safekeep</div>
           <div class="ca">Yael van der Wouden</div>
-        </div>
+        </a>
         <div class="meta">
           <p class="why">Book of the day</p>
-          <h3>The Safekeep</h3>
-          <p class="author">Yael van der Wouden</p>
+          <h3 id="book-title">The Safekeep</h3>
+          <p class="author" id="book-author">Yael van der Wouden</p>
           <p class="desc">The Netherlands, 1961. A solitary woman's carefully-kept house is invaded by her brother's new lover, and the tension between them becomes something neither expected. Won the Women's Prize 2025 — sits naturally in the world of <em>Piglet</em> and <em>Heart the Lover</em>.</p>
           <p class="tags">272pp <span class="pipe">|</span> Literary fiction <span class="pipe">|</span> Restrained, sensual, quietly devastating</p>
+          <p class="book-preview-hint" id="book-preview-hint"></p>
         </div>
       </div>
 
@@ -1701,6 +1733,69 @@
   }
 
   loadBriefing();
+
+  /* ─── Book of the day — Google Books cover + preview ──────
+     Public API, no key required. Given a title + author, fetches
+     the real jacket image and a preview link. If anything fails
+     (offline, no match, no image), the hand-styled gradient cover
+     stays exactly as-is — so the section never looks broken.
+
+     BOOK_OF_DAY is the editorial pick; edit it when you rotate
+     the recommendation. The lookup keys off title + author.
+     ─────────────────────────────────────────────────────────── */
+  const BOOK_OF_DAY = {
+    title: "The Safekeep",
+    author: "Yael van der Wouden"
+  };
+
+  async function loadBookCover(title, author, coverEl, hintEl) {
+    if (!coverEl) return;
+    try {
+      const q = encodeURIComponent(`intitle:${title} inauthor:${author}`);
+      const url = `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&country=GB`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+      if (!res.ok) throw new Error(`Books API ${res.status}`);
+      const data = await res.json();
+      const vol = data.items?.[0]?.volumeInfo;
+      if (!vol) throw new Error("No match");
+
+      // Preview link — always set if we have a volume, even without an image
+      const preview = vol.previewLink || vol.infoLink;
+      if (preview) {
+        coverEl.href = preview.replace(/^http:/, "https:");
+        if (hintEl) {
+          hintEl.innerHTML = `<a href="${coverEl.href}" target="_blank" rel="noopener">Read a preview ↗</a>`;
+          hintEl.classList.remove("empty");
+        }
+      }
+
+      // Cover image — upgrade http→https, prefer the larger thumbnail
+      const img = vol.imageLinks;
+      const src = (img?.thumbnail || img?.smallThumbnail || "").replace(/^http:/, "https:");
+      if (src) {
+        const jacket = new Image();
+        jacket.className = "jacket";
+        jacket.alt = `${title} cover`;
+        jacket.loading = "lazy";
+        jacket.onload = () => {
+          coverEl.appendChild(jacket);
+          coverEl.classList.add("has-image");
+        };
+        jacket.onerror = () => { /* keep gradient fallback */ };
+        jacket.src = src;
+      }
+    } catch (err) {
+      // Silent: gradient cover + no preview link is a fine fallback.
+      if (hintEl) hintEl.classList.add("empty");
+    }
+  }
+
+  loadBookCover(
+    BOOK_OF_DAY.title,
+    BOOK_OF_DAY.author,
+    document.getElementById("book-cover"),
+    document.getElementById("book-preview-hint")
+  );
 
   /* ─── Currently reading ─────────────────────────── */
   function renderReading() {
