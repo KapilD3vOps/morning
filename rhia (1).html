@@ -1,0 +1,1754 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EFE4">
+<title>Good morning, Rhia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..900,0..100&family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F4EFE4;
+    --paper: #FBF7EC;
+    --ink: #1B1613;
+    --ink-2: #3D362F;
+    --ink-mute: #77695C;
+    --rule: #C9BEA9;
+    --rule-soft: #DED4C0;
+    --accent: #B21E28;
+    --accent-ink: #7A1319;
+    --pos: #1F5A3A;
+    --neg: #B21E28;
+    --amber: #A3641A;
+    --hot: #B21E28;
+
+    --serif-display: "Fraunces", "Times New Roman", Georgia, serif;
+    --serif-body: "Newsreader", "Times New Roman", Georgia, serif;
+    --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+    --pad-x: 20px;
+    --max-w: 460px;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); }
+  body {
+    font-family: var(--serif-body);
+    font-size: 16px;
+    line-height: 1.5;
+    font-feature-settings: "onum" 1, "kern" 1, "liga" 1;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+    min-height: 100vh;
+  }
+  .paper { max-width: var(--max-w); margin: 0 auto; padding: 0 var(--pad-x) 96px; }
+
+  /* ─── Masthead ───────────────────────────────── */
+  .masthead { padding: 28px 0 0; }
+  .masthead .edition-strip {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mute);
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .masthead .edition-strip span:last-child { font-variant-numeric: tabular-nums; }
+  .masthead h1 {
+    font-family: var(--serif-display);
+    font-weight: 300;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+    font-size: clamp(38px, 11vw, 46px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin: 14px 0 4px;
+  }
+  .masthead h1 .comma { color: var(--ink-mute); }
+  .masthead h1 .name {
+    font-style: italic; font-weight: 400;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+  }
+  .masthead .dateline {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-mute);
+    margin: 0 0 16px;
+  }
+  .masthead .dateline .dot { margin: 0 6px; opacity: 0.5; }
+
+  /* ─── Tabs ───────────────────────────────────── */
+  .tabs {
+    display: flex;
+    border-top: 3px double var(--ink);
+    border-bottom: 1px solid var(--ink);
+    margin: 4px 0 0;
+  }
+  .tab {
+    flex: 1;
+    background: none; border: 0;
+    padding: 12px 4px;
+    font-family: var(--sans);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    cursor: pointer;
+    position: relative;
+  }
+  .tab + .tab { border-left: 1px solid var(--rule); }
+  .tab[aria-selected="true"] { color: var(--ink); }
+  .tab[aria-selected="true"]::after {
+    content: ""; position: absolute; left: 20%; right: 20%; bottom: -1px; height: 2px;
+    background: var(--ink);
+  }
+
+  /* ─── Barometer ──────────────────────────────── */
+  .barometer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 14px 0 0;
+  }
+  .barometer .cell { padding: 0 12px; }
+  .barometer .cell + .cell { border-left: 1px solid var(--rule-soft); }
+  .barometer .cell:first-child { padding-left: 0; }
+  .barometer .cell:last-child { padding-right: 0; }
+  .barometer .lbl {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0 0 4px;
+  }
+  .barometer .val {
+    font-family: var(--serif-display);
+    font-size: 22px; font-weight: 400;
+    line-height: 1.1;
+    color: var(--ink);
+    font-variant-numeric: lining-nums;
+  }
+  .barometer .val .unit { font-size: 12px; color: var(--ink-mute); margin-left: 2px; }
+  .barometer .sub {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-top: 3px;
+  }
+  .status-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+    background: var(--pos);
+  }
+  .status-dot.warn { background: var(--amber); }
+  .status-dot.bad { background: var(--neg); }
+
+  /* Leave-time strip */
+  .leave-strip {
+    margin-top: 14px;
+    padding: 10px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .leave-strip .primary {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 15px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink);
+  }
+  .leave-strip .primary strong { font-style: normal; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .leave-strip .aux { color: var(--ink-mute); font-size: 10px; }
+  .leave-strip .aux .sep { margin: 0 6px; opacity: 0.5; }
+
+  /* ─── Section chrome ─────────────────────────── */
+  section { padding: 28px 0 4px; }
+  .sec-head {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 0 14px;
+  }
+  .sec-head .label {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--ink); white-space: nowrap;
+  }
+  .sec-head .rule { flex: 1; height: 1px; background: var(--ink); }
+  .sec-head .mark {
+    font-family: var(--serif-display);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute);
+  }
+
+  /* ─── Alert banner ───────────────────────────── */
+  .alert {
+    display: none;
+    background: var(--accent);
+    color: #FBF7EC;
+    padding: 12px 14px;
+    margin: 16px 0 0;
+    font-family: var(--sans);
+    font-size: 12px; font-weight: 500;
+  }
+  .alert.active { display: block; }
+  .alert .prefix {
+    font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; font-size: 10px;
+    margin-right: 8px;
+  }
+
+  /* ─── News: briefing ─────────────────────────── */
+  .lead { margin-bottom: 24px; }
+  .lead .kicker, .story .kicker {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 6px;
+  }
+  .story .kicker { color: var(--ink-mute); }
+  .lead h2 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-variation-settings: "opsz" 96, "SOFT" 20;
+    font-size: 26px; line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .lead .summary, .story .summary {
+    font-family: var(--serif-body);
+    font-size: 15px; line-height: 1.55;
+    color: var(--ink-2);
+    margin: 0 0 10px;
+  }
+  .story {
+    padding: 20px 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .story h3 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    font-size: 19px; line-height: 1.2;
+    margin: 0 0 8px;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .story .summary { font-size: 14px; line-height: 1.5; }
+  .byline {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute);
+    margin: 0;
+  }
+  .byline .src {
+    font-style: normal; font-family: var(--sans);
+    font-weight: 600; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+  }
+  .byline .dot { margin: 0 6px; opacity: 0.5; }
+
+  /* ─── Arsenal ────────────────────────────────── */
+  .arsenal-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+  }
+  .arsenal-grid > div { padding: 14px; }
+  .arsenal-grid > div + div { border-left: 1px solid var(--rule); }
+  .arsenal-grid .lbl {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0 0 6px;
+  }
+  .arsenal-grid .score {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 26px;
+    line-height: 1; letter-spacing: -0.02em;
+    color: var(--ink); font-variant-numeric: lining-nums;
+  }
+  .arsenal-grid .score .win { color: var(--accent); font-weight: 600; }
+  .arsenal-grid .meta {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute); margin-top: 6px;
+  }
+  .arsenal-grid .fixture {
+    font-family: var(--serif-display);
+    font-weight: 400; font-size: 16px;
+    line-height: 1.2; color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .arsenal-grid .fixture strong { font-weight: 500; }
+  .arsenal-news {
+    padding: 12px 0 0;
+    font-family: var(--serif-body);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .arsenal-news p { margin: 0; }
+  .arsenal-news .tag {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-right: 6px;
+  }
+  .arsenal-table {
+    margin-top: 12px;
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--serif-body);
+    font-size: 13px;
+  }
+  .arsenal-table th {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute);
+    text-align: right;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .arsenal-table th:first-child, .arsenal-table td:first-child { text-align: left; }
+  .arsenal-table th:nth-child(2), .arsenal-table td:nth-child(2) { text-align: left; }
+  .arsenal-table td {
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--rule-soft);
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+  }
+  .arsenal-table tr.us td { color: var(--ink); font-weight: 500; }
+  .arsenal-table tr.us td:first-child { color: var(--accent); font-weight: 600; }
+  .arsenal-table tr:last-child td { border-bottom: none; }
+
+  /* ─── Transport ──────────────────────────────── */
+  .line-card {
+    display: grid;
+    grid-template-columns: 4px 1fr auto;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: center;
+  }
+  .line-card:last-child { border-bottom: none; }
+  .line-bar { background: #000; align-self: stretch; }
+  .line-name {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 17px;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .line-name .sub {
+    display: block;
+    font-family: var(--serif-body);
+    font-style: italic; font-weight: 400;
+    font-size: 12px; color: var(--ink-mute);
+    margin-top: 2px;
+  }
+  .line-status {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--pos); text-align: right; white-space: nowrap;
+  }
+  .line-status.warn { color: var(--amber); }
+  .line-status.bad { color: var(--neg); }
+
+  /* ─── Sales / Shops ──────────────────────────── */
+  .shops { margin: 4px 0; }
+  .shop-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: baseline;
+    text-decoration: none;
+    color: inherit;
+  }
+  .shop-row:last-of-type { border-bottom: none; }
+  .shop-name {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 17px;
+    color: var(--ink); letter-spacing: -0.01em;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .shop-name .hot-pill {
+    font-family: var(--sans);
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    background: var(--hot); color: var(--paper);
+    padding: 2px 5px;
+    border-radius: 1px;
+    position: relative; top: -2px;
+  }
+  .shop-note {
+    display: block;
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 12px; color: var(--ink-mute);
+    margin-top: 2px;
+  }
+  .shop-disc {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 15px;
+    color: var(--ink); font-variant-numeric: lining-nums;
+    text-align: right; white-space: nowrap;
+  }
+  .shop-disc .lbl {
+    display: block;
+    font-family: var(--sans);
+    font-size: 8px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 2px;
+  }
+  .shop-empty {
+    font-family: var(--serif-body);
+    font-style: italic; color: var(--ink-mute);
+    font-size: 14px; padding: 8px 0;
+  }
+  .shop-row.no-sale { opacity: 0.55; }
+  .shop-row.no-sale .shop-disc { font-style: italic; font-weight: 400; color: var(--ink-mute); }
+
+  /* ─── Reading ────────────────────────────────── */
+  .book {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  .book .cover {
+    aspect-ratio: 2 / 3;
+    background: linear-gradient(160deg, #C7B8A0 0%, #A08E76 55%, #7C6952 100%);
+    box-shadow: 0 6px 14px -6px rgba(27,22,19,0.35), inset 0 0 0 1px rgba(0,0,0,0.08);
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 12px 10px;
+    color: #1F1811;
+    position: relative;
+  }
+  .book .cover::before {
+    content: ""; position: absolute;
+    top: 8px; bottom: 8px; left: 4px; width: 1px;
+    background: rgba(0,0,0,0.12);
+  }
+  .book .cover .ct {
+    font-family: var(--serif-display);
+    font-style: italic; font-weight: 400;
+    font-size: 14px; line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .book .cover .ca {
+    font-family: var(--sans);
+    font-size: 8px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    opacity: 0.75;
+  }
+  .book .meta .why {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 6px;
+  }
+  .book .meta h3 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-variation-settings: "opsz" 96, "SOFT" 40;
+    font-size: 22px; line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 4px; color: var(--ink);
+  }
+  .book .meta .author {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 14px;
+    color: var(--ink-mute); margin: 0 0 10px;
+  }
+  .book .meta .desc {
+    font-family: var(--serif-body);
+    font-size: 13.5px; line-height: 1.45;
+    color: var(--ink-2); margin: 0 0 8px;
+  }
+  .book .meta .tags {
+    font-family: var(--sans);
+    font-size: 10px; color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+  }
+  .book .meta .tags .pipe { margin: 0 6px; opacity: 0.5; }
+
+  /* Currently reading */
+  .reading-now {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .reading-now .lbl {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute); margin: 0 0 8px;
+  }
+  .reading-now .title {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 17px;
+    line-height: 1.2; letter-spacing: -0.01em;
+    color: var(--ink); margin: 0;
+  }
+  .reading-now .title .author {
+    font-style: italic; font-weight: 400;
+    color: var(--ink-mute);
+  }
+  .reading-now .progress-wrap {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 10px;
+  }
+  .reading-now .bar {
+    flex: 1; height: 4px;
+    background: var(--rule-soft);
+    position: relative;
+  }
+  .reading-now .bar .fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--ink);
+    transition: width 0.3s ease;
+  }
+  .reading-now .pct {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    min-width: 32px; text-align: right;
+  }
+  .reading-now .tube-est {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+  }
+  .reading-now .controls {
+    display: flex; gap: 12px;
+    margin-top: 10px;
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .reading-now .controls button {
+    background: none; border: none;
+    color: var(--ink-mute); cursor: pointer;
+    padding: 4px 0; letter-spacing: 0.12em;
+    font-family: inherit; font-size: inherit;
+    text-transform: inherit;
+    border-bottom: 1px solid var(--rule);
+  }
+  .reading-now .controls button:hover { color: var(--ink); }
+  .reading-now .empty {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 13.5px;
+    color: var(--ink-mute); margin: 0;
+  }
+  .reading-now .empty a {
+    color: var(--ink); text-decoration: underline;
+    text-decoration-color: var(--rule); text-underline-offset: 3px;
+  }
+
+  /* ─── To-do ──────────────────────────────────── */
+  .todo-add {
+    display: flex; gap: 8px; margin: 0 0 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .todo-add input {
+    flex: 1; background: transparent; border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 2px;
+    font-family: var(--serif-body);
+    font-size: 15px; color: var(--ink); outline: none;
+  }
+  .todo-add input:focus { border-bottom-color: var(--ink); }
+  .todo-add input::placeholder { color: var(--ink-mute); font-style: italic; }
+  .todo-add button {
+    background: var(--ink); color: var(--paper);
+    border: none;
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 8px 14px; cursor: pointer;
+  }
+  .todo-add button:active { background: var(--accent); }
+  .todo-list { list-style: none; margin: 0; padding: 0; }
+  .todo-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .todo-item:last-child { border-bottom: none; }
+  .todo-check {
+    appearance: none;
+    width: 16px; height: 16px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    margin-top: 3px; cursor: pointer;
+    flex-shrink: 0; position: relative;
+  }
+  .todo-check:checked { background: var(--ink); }
+  .todo-check:checked::after {
+    content: ""; position: absolute; left: 3px; top: 0;
+    width: 5px; height: 10px;
+    border-right: 2px solid var(--paper);
+    border-bottom: 2px solid var(--paper);
+    transform: rotate(45deg);
+  }
+  .todo-text {
+    flex: 1;
+    font-family: var(--serif-body);
+    font-size: 15px; color: var(--ink);
+    line-height: 1.4; word-break: break-word;
+  }
+  .todo-item.done .todo-text {
+    color: var(--ink-mute); text-decoration: line-through;
+    text-decoration-color: var(--ink-mute);
+  }
+  .todo-del {
+    background: none; border: none; padding: 0 4px;
+    color: var(--ink-mute);
+    font-family: var(--serif-body); font-size: 18px;
+    cursor: pointer; line-height: 1;
+  }
+  .todo-empty {
+    font-family: var(--serif-body); font-style: italic;
+    color: var(--ink-mute); font-size: 14px; padding: 8px 0;
+  }
+
+  /* ─── Pick / Week Ahead ──────────────────────── */
+  .pick {
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 14px 0;
+    display: grid; gap: 4px;
+  }
+  .pick .cat {
+    font-family: var(--sans);
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .pick h3 {
+    font-family: var(--serif-display);
+    font-style: italic; font-weight: 400;
+    font-size: 19px; line-height: 1.15;
+    margin: 0; color: var(--ink);
+  }
+  .pick .dek {
+    font-family: var(--serif-body);
+    font-size: 13.5px; color: var(--ink-2);
+    margin: 4px 0 0;
+  }
+  .pick .where {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute);
+    margin-top: 4px;
+  }
+  .week-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .week-item:last-child { border-bottom: none; }
+  .week-item .when {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent-ink);
+    margin-bottom: 4px;
+  }
+  .week-item .what {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 16px;
+    line-height: 1.25; color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .week-item .where {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute); margin-top: 2px;
+  }
+
+  /* ─── Markets tab ────────────────────────────── */
+  .mkt-note {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute); margin: 0 0 16px;
+  }
+  .mkt-group { margin-bottom: 22px; }
+  .mkt-group .sec-head { margin-bottom: 4px; }
+  .mkt-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    align-items: baseline;
+  }
+  .mkt-row:last-child { border-bottom: none; }
+  .mkt-row .name {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 15px;
+    color: var(--ink); letter-spacing: -0.01em;
+  }
+  .mkt-row .name .sub {
+    display: block;
+    font-family: var(--serif-body);
+    font-style: italic; font-weight: 400;
+    font-size: 11px; color: var(--ink-mute);
+    margin-top: 1px;
+  }
+  .mkt-row .val {
+    font-family: var(--serif-display);
+    font-weight: 400; font-size: 16px;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums lining-nums;
+    text-align: right;
+  }
+  .mkt-row .chg {
+    font-family: var(--sans);
+    font-size: 11px; font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    text-align: right; min-width: 68px;
+  }
+  .mkt-row .chg.pos { color: var(--pos); }
+  .mkt-row .chg.neg { color: var(--neg); }
+  .mkt-row .chg .arrow { margin-right: 3px; }
+  .mkt-closed { color: var(--ink-mute); font-style: italic; font-family: var(--serif-body); font-size: 11px; }
+  .mkt-commentary {
+    margin-top: 18px;
+    padding: 16px 0;
+    border-top: 3px double var(--ink);
+    border-bottom: 1px solid var(--rule);
+  }
+  .mkt-commentary .lbl {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--accent-ink); margin: 0 0 8px;
+  }
+  .mkt-commentary p {
+    font-family: var(--serif-body);
+    font-size: 14.5px; line-height: 1.55;
+    color: var(--ink-2); margin: 0 0 8px;
+  }
+  .mkt-commentary p:last-child { margin-bottom: 0; }
+  .mkt-commentary p .dropcap {
+    font-family: var(--serif-display);
+    font-weight: 500; font-size: 34px;
+    line-height: 0.85;
+    float: left; margin: 2px 6px 0 0;
+    color: var(--ink);
+  }
+
+  /* ─── Settings ───────────────────────────────── */
+  .settings-intro {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 13.5px;
+    color: var(--ink-mute);
+    margin: 20px 0 0;
+  }
+  .set-group { margin: 24px 0 0; }
+  .set-group .sec-head { margin-bottom: 12px; }
+  .set-field {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule-soft);
+    display: grid;
+    gap: 6px;
+  }
+  .set-field:last-child { border-bottom: none; }
+  .set-field label {
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-mute);
+  }
+  .set-field input[type="text"],
+  .set-field input[type="number"],
+  .set-field input[type="time"],
+  .set-field textarea {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--rule);
+    padding: 6px 0;
+    font-family: var(--serif-body);
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    font-family: var(--serif-body);
+    resize: vertical;
+  }
+  .set-field input:focus, .set-field textarea:focus { border-bottom-color: var(--ink); }
+  .set-field .hint {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute);
+  }
+  .set-field .row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px;
+    gap: 10px;
+    align-items: baseline;
+  }
+  .set-checks {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-top: 4px;
+  }
+  .set-check {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    font-family: var(--sans);
+    font-size: 11px;
+    color: var(--ink-2);
+    cursor: pointer;
+    user-select: none;
+  }
+  .set-check input { display: none; }
+  .set-check.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .set-save-bar {
+    position: sticky; bottom: 0;
+    background: linear-gradient(to top, var(--bg) 60%, rgba(244,239,228,0));
+    padding: 16px 0 12px;
+    margin-top: 24px;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .btn-primary {
+    background: var(--ink); color: var(--paper);
+    border: none;
+    font-family: var(--sans);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 10px 18px; cursor: pointer;
+  }
+  .btn-primary:active { background: var(--accent); }
+  .btn-ghost {
+    background: none; border: none;
+    color: var(--ink-mute);
+    font-family: var(--sans);
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    cursor: pointer; padding: 6px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .save-toast {
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 12px;
+    color: var(--pos); opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .save-toast.show { opacity: 1; }
+
+  /* ─── Colophon ───────────────────────────────── */
+  .colophon {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--serif-body);
+    font-style: italic; font-size: 11px;
+    color: var(--ink-mute);
+    text-align: center; line-height: 1.6;
+  }
+  .colophon .divider { margin: 0 6px; }
+
+  /* ─── Panel switching ────────────────────────── */
+  [role="tabpanel"] { display: none; }
+  [role="tabpanel"].active { display: block; }
+
+  @media (min-width: 700px) { .paper { max-width: 520px; } }
+</style>
+</head>
+<body>
+
+<main class="paper">
+
+  <!-- ═══════════════ MASTHEAD ═══════════════════ -->
+  <header class="masthead">
+    <div class="edition-strip">
+      <span>The Morning Edition</span>
+      <span id="edition-no">Vol. I · No. 001</span>
+    </div>
+    <h1>Good morning<span class="comma">,</span> <span class="name" id="reader-name">Rhia</span></h1>
+    <p class="dateline" id="dateline">Friday, 21 August 2026<span class="dot">·</span>London</p>
+  </header>
+
+  <!-- ═══════════════ TABS ═══════════════════════ -->
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" aria-controls="today" id="tab-today">Today</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="markets" id="tab-markets">Markets</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="settings" id="tab-settings">Settings</button>
+  </div>
+
+  <!-- ═══════════════ TODAY PANEL ════════════════ -->
+  <div role="tabpanel" id="today" class="active" aria-labelledby="tab-today">
+
+    <div class="alert" id="alert-banner">
+      <span class="prefix">Alert</span><span id="alert-text"></span>
+    </div>
+
+    <!-- Barometer -->
+    <div class="barometer">
+      <div class="cell">
+        <p class="lbl">At 7am</p>
+        <div class="val" id="weather-temp">17<span class="unit">°C</span></div>
+        <p class="sub" id="weather-sub">Overcast, dry until noon</p>
+      </div>
+      <div class="cell">
+        <p class="lbl">Northern line</p>
+        <div class="val" style="font-size:16px;padding-top:2px;">
+          <span class="status-dot" id="nl-dot"></span><span id="nl-status">Good service</span>
+        </div>
+        <p class="sub" id="nl-sub">Both branches, all stations</p>
+      </div>
+    </div>
+
+    <!-- Leave-time strip -->
+    <div class="leave-strip">
+      <span class="primary" id="leave-primary">Leave in <strong>—</strong></span>
+      <span class="aux" id="leave-aux">Umbrella: no<span class="sep">·</span>sunrise 05:58</span>
+    </div>
+
+    <!-- Morning Briefing -->
+    <section>
+      <div class="sec-head">
+        <span class="label">Morning Briefing</span>
+        <span class="rule"></span>
+        <span class="mark">§</span>
+      </div>
+
+      <article class="lead">
+        <p class="kicker">Lead · UK · Business</p>
+        <h2>Softer inflation tilts the Bank toward a November cut</h2>
+        <p class="summary">July CPI came in at 2.4%, a tenth below consensus and the third consecutive downside surprise. Two dissenters on the MPC have shifted to the cut camp in overnight commentary, and rates markets now price a 62% chance of a 25bp move in November — up from 38% before the release.</p>
+        <p class="summary">Sterling weakened 0.2% against the dollar as the print landed; gilts caught a bid across the curve. FTSE futures indicate a modest opening rally led by rate-sensitives.</p>
+        <p class="byline"><span class="src">Financial Times</span> <span class="dot">·</span> filed 06:14 BST</p>
+      </article>
+
+      <article class="story">
+        <p class="kicker">United States</p>
+        <h3>Powell speaks at Jackson Hole today — markets brace for a signal</h3>
+        <p class="summary">The Fed chair's speech at 15:00 BST is his last major address before the September FOMC. Traders are pricing a 78% chance of a 25bp cut next month. A dovish tone would extend the equity rally; anything hawkish lands hard into thin summer volume.</p>
+        <p class="byline"><span class="src">Reuters</span> <span class="dot">·</span> 05:40 BST</p>
+      </article>
+
+      <article class="story">
+        <p class="kicker">London</p>
+        <h3>Elizabeth line extension to Ebbsfleet clears preliminary Treasury review</h3>
+        <p class="summary">A £2.1bn proposal to extend the Elizabeth line east through Dartford to Ebbsfleet cleared preliminary Treasury review yesterday. City Hall targets a 2029 construction start with services from 2035. Property analysts expect a repeat of the pre-opening price ripple seen along the original route.</p>
+        <p class="byline"><span class="src">The Standard</span> <span class="dot">·</span> 22:10 last night</p>
+      </article>
+
+      <article class="story">
+        <p class="kicker">World</p>
+        <h3>Doha ceasefire talks enter third day with cautious optimism</h3>
+        <p class="summary">Mediators report tangible movement on prisoner-exchange terms after two days of what officials describe as the most substantive negotiations in six months. Both sides caution that a wider political framework remains distant. A joint statement is expected before the weekend.</p>
+        <p class="byline"><span class="src">BBC News</span> <span class="dot">·</span> 06:02 BST</p>
+      </article>
+
+      <article class="story">
+        <p class="kicker">United States · Business</p>
+        <h3>Nvidia beats on revenue but forward guidance underwhelms Wall Street</h3>
+        <p class="summary">Data-centre revenue grew 74% year-on-year on continued Blackwell demand, though guidance for the next quarter came in below the most bullish analyst forecasts. Shares fell 4% in after-hours trading. Expect spillover into Nasdaq futures at the London open and pressure on the semiconductor cohort in Europe.</p>
+        <p class="byline"><span class="src">Bloomberg</span> <span class="dot">·</span> 21:30 last night</p>
+      </article>
+
+      <article class="story">
+        <p class="kicker">United Kingdom · Education</p>
+        <h3>A-level results: overall pass rate steady, sciences pull ahead</h3>
+        <p class="summary">Yesterday's results held broadly in line with 2025 — around 27% of entries at A*/A, with STEM subjects gaining share against humanities for the third consecutive year. UCAS reports record acceptances into computer science, engineering, and medical courses, and a further softening in applications to English and modern languages.</p>
+        <p class="byline"><span class="src">The Guardian</span> <span class="dot">·</span> 05:20 BST</p>
+      </article>
+    </section>
+
+    <!-- Arsenal -->
+    <section>
+      <div class="sec-head">
+        <span class="label">Arsenal</span>
+        <span class="rule"></span>
+        <span class="mark" style="color:var(--accent);">◆</span>
+      </div>
+
+      <div class="arsenal-grid">
+        <div>
+          <p class="lbl">Last</p>
+          <div class="score"><span class="win">Arsenal 3</span> · Leeds 1</div>
+          <p class="meta">Sat 16 Aug · Premier League · H</p>
+        </div>
+        <div>
+          <p class="lbl">Next</p>
+          <div class="fixture"><strong>Newcastle</strong> (A)</div>
+          <p class="meta">Tomorrow · 17:30 · Sky Sports</p>
+        </div>
+      </div>
+
+      <div class="arsenal-news">
+        <p><span class="tag">Team news</span>Ødegaard passed fit for Newcastle after Wednesday's training. Saliba a doubt with a minor calf strain; Timber steps in if needed.</p>
+      </div>
+
+      <table class="arsenal-table" aria-label="Premier League table">
+        <thead>
+          <tr><th style="width:22px;">#</th><th>Club</th><th>P</th><th>GD</th><th>Pts</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Liverpool</td><td>1</td><td>+3</td><td>3</td></tr>
+          <tr class="us"><td>2</td><td>Arsenal</td><td>1</td><td>+2</td><td>3</td></tr>
+          <tr><td>3</td><td>Man City</td><td>1</td><td>+2</td><td>3</td></tr>
+          <tr><td>4</td><td>Chelsea</td><td>1</td><td>+1</td><td>3</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Transport -->
+    <section>
+      <div class="sec-head">
+        <span class="label">Transport</span>
+        <span class="rule"></span>
+        <span class="mark">‡</span>
+      </div>
+      <div class="line-card">
+        <div class="line-bar" style="background:#000;"></div>
+        <div class="line-name">Northern line<span class="sub">Both branches · Kennington via Bank and Charing Cross</span></div>
+        <div class="line-status" id="nl-status-2">Good service</div>
+      </div>
+    </section>
+
+    <!-- Sales / Shops -->
+    <section>
+      <div class="sec-head">
+        <span class="label">On sale this week</span>
+        <span class="rule"></span>
+        <span class="mark">✂</span>
+      </div>
+      <div class="shops" id="shops-list">
+        <!-- populated by script -->
+      </div>
+      <p class="mkt-note" style="margin: 12px 0 0; font-size: 11px;" id="shops-updated"></p>
+    </section>
+
+    <!-- Reading -->
+    <section>
+      <div class="sec-head">
+        <span class="label">Reading</span>
+        <span class="rule"></span>
+        <span class="mark">❦</span>
+      </div>
+      <div class="book">
+        <div class="cover" aria-hidden="true">
+          <div class="ct">The<br>Safekeep</div>
+          <div class="ca">Yael van der Wouden</div>
+        </div>
+        <div class="meta">
+          <p class="why">Book of the day</p>
+          <h3>The Safekeep</h3>
+          <p class="author">Yael van der Wouden</p>
+          <p class="desc">The Netherlands, 1961. A solitary woman's carefully-kept house is invaded by her brother's new lover, and the tension between them becomes something neither expected. Won the Women's Prize 2025 — sits naturally in the world of <em>Piglet</em> and <em>Heart the Lover</em>.</p>
+          <p class="tags">272pp <span class="pipe">|</span> Literary fiction <span class="pipe">|</span> Restrained, sensual, quietly devastating</p>
+        </div>
+      </div>
+
+      <div class="reading-now" id="reading-now">
+        <!-- populated by script -->
+      </div>
+    </section>
+
+    <!-- To do -->
+    <section>
+      <div class="sec-head">
+        <span class="label">Notes for today</span>
+        <span class="rule"></span>
+        <span class="mark">✎</span>
+      </div>
+      <div class="todo-add">
+        <input type="text" id="todo-input" placeholder="Add a note…" autocomplete="off">
+        <button id="todo-add-btn">Add</button>
+      </div>
+      <ul class="todo-list" id="todo-list"></ul>
+    </section>
+
+    <!-- Pick of the day / Week ahead -->
+    <section>
+      <div class="sec-head">
+        <span class="label" id="pick-label">Pick of the day</span>
+        <span class="rule"></span>
+        <span class="mark">✦</span>
+      </div>
+      <div id="pick-content">
+        <!-- populated by script based on day of week -->
+      </div>
+    </section>
+
+    <p class="colophon">
+      Curated for Rhia<span class="divider">·</span>updated <span id="last-updated">06:20</span><span class="divider">·</span>tap Markets or Settings above
+    </p>
+
+  </div><!-- /today -->
+
+  <!-- ═══════════════ MARKETS PANEL ══════════════ -->
+  <div role="tabpanel" id="markets" aria-labelledby="tab-markets">
+
+    <p class="mkt-note" style="margin-top: 24px;">
+      All values as of 06:20 BST. London opens in <span id="mkt-open" style="font-style:normal;color:var(--ink-2);">1h 40m</span>. US markets closed overnight.
+    </p>
+
+    <div class="mkt-group">
+      <div class="sec-head"><span class="label">Equities</span><span class="rule"></span></div>
+      <div class="mkt-row"><div class="name">FTSE 100<span class="sub">London</span></div><div class="val">8,412.30</div><div class="chg pos"><span class="arrow">▲</span>0.32%</div></div>
+      <div class="mkt-row"><div class="name">S&amp;P 500<span class="sub">New York · close</span></div><div class="val">5,842.11</div><div class="chg neg"><span class="arrow">▼</span>0.14%</div></div>
+      <div class="mkt-row"><div class="name">Nasdaq<span class="sub">New York · close</span></div><div class="val">18,721.44</div><div class="chg pos"><span class="arrow">▲</span>0.21%</div></div>
+      <div class="mkt-row"><div class="name">Euro Stoxx 50<span class="sub">Frankfurt · pre-open</span></div><div class="val">5,124.60</div><div class="chg pos"><span class="arrow">▲</span>0.18%</div></div>
+      <div class="mkt-row"><div class="name">Nikkei 225<span class="sub">Tokyo · <span class="mkt-closed">closed</span></span></div><div class="val">38,214.90</div><div class="chg pos"><span class="arrow">▲</span>0.44%</div></div>
+    </div>
+
+    <div class="mkt-group">
+      <div class="sec-head"><span class="label">Currencies</span><span class="rule"></span></div>
+      <div class="mkt-row"><div class="name">GBP / USD<span class="sub">Cable</span></div><div class="val">1.3482</div><div class="chg neg"><span class="arrow">▼</span>0.18%</div></div>
+      <div class="mkt-row"><div class="name">GBP / EUR<span class="sub"></span></div><div class="val">1.1734</div><div class="chg pos"><span class="arrow">▲</span>0.06%</div></div>
+      <div class="mkt-row"><div class="name">EUR / USD<span class="sub"></span></div><div class="val">1.1490</div><div class="chg neg"><span class="arrow">▼</span>0.11%</div></div>
+    </div>
+
+    <div class="mkt-group">
+      <div class="sec-head"><span class="label">Commodities &amp; Rates</span><span class="rule"></span></div>
+      <div class="mkt-row"><div class="name">Gold<span class="sub">Spot · $/oz</span></div><div class="val">2,548.20</div><div class="chg pos"><span class="arrow">▲</span>0.42%</div></div>
+      <div class="mkt-row"><div class="name">Brent Crude<span class="sub">$/bbl</span></div><div class="val">79.14</div><div class="chg neg"><span class="arrow">▼</span>0.68%</div></div>
+      <div class="mkt-row"><div class="name">UK 10-yr gilt<span class="sub">Yield</span></div><div class="val">4.12%</div><div class="chg neg"><span class="arrow">▼</span>2 bp</div></div>
+      <div class="mkt-row"><div class="name">Bitcoin<span class="sub">$</span></div><div class="val">64,120</div><div class="chg pos"><span class="arrow">▲</span>1.14%</div></div>
+    </div>
+
+    <div class="mkt-commentary">
+      <p class="lbl">Morning Note</p>
+      <p><span class="dropcap">S</span>terling drifted lower overnight after a soft CPI print revived expectations of a Bank of England cut before year-end. Cable slipped through 1.35 in Asian trading, while gilts caught a modest bid across the curve.</p>
+      <p>Focus today sits squarely on Jackson Hole. Powell is expected to acknowledge the case for a September cut without pre-committing; equity vol has priced this outcome, so any hawkish surprise would land hard. FTSE opens with miners and rate-sensitives leading.</p>
+    </div>
+
+  </div><!-- /markets -->
+
+  <!-- ═══════════════ SETTINGS PANEL ═════════════ -->
+  <div role="tabpanel" id="settings" aria-labelledby="tab-settings">
+
+    <p class="settings-intro">
+      Everything here lives on this phone. No account, no sync — just your preferences.
+    </p>
+
+    <div class="set-group">
+      <div class="sec-head"><span class="label">Personal</span><span class="rule"></span></div>
+      <div class="set-field">
+        <label for="set-name">Name</label>
+        <input type="text" id="set-name" placeholder="Rhia">
+      </div>
+      <div class="set-field">
+        <label for="set-leave">Usual leave time</label>
+        <input type="time" id="set-leave" value="07:00">
+        <span class="hint">Used for the countdown and 'weather at leave-time'.</span>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <div class="sec-head"><span class="label">News</span><span class="rule"></span></div>
+      <div class="set-field">
+        <label>Topics you want</label>
+        <div class="set-checks" data-set="news-topics">
+          <label class="set-check"><input type="checkbox" value="current"> Current affairs</label>
+          <label class="set-check"><input type="checkbox" value="us"> American</label>
+          <label class="set-check"><input type="checkbox" value="london"> London</label>
+          <label class="set-check"><input type="checkbox" value="business"> Business</label>
+          <label class="set-check"><input type="checkbox" value="culture"> Culture</label>
+          <label class="set-check"><input type="checkbox" value="tech"> Tech</label>
+        </div>
+      </div>
+      <div class="set-field">
+        <label>Topics to avoid</label>
+        <div class="set-checks" data-set="news-avoid">
+          <label class="set-check"><input type="checkbox" value="celeb"> Celebrity</label>
+          <label class="set-check"><input type="checkbox" value="royal"> Royal family</label>
+          <label class="set-check"><input type="checkbox" value="crime"> Crime</label>
+          <label class="set-check"><input type="checkbox" value="opinion"> Opinion pieces</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <div class="sec-head"><span class="label">Reading</span><span class="rule"></span></div>
+      <div class="set-field">
+        <label for="set-current-title">Currently reading — title</label>
+        <input type="text" id="set-current-title" placeholder="e.g. Piglet">
+      </div>
+      <div class="set-field">
+        <label for="set-current-author">Currently reading — author</label>
+        <input type="text" id="set-current-author" placeholder="e.g. Lottie Hazell">
+      </div>
+      <div class="set-field">
+        <label>Progress</label>
+        <div class="row">
+          <span class="hint" style="margin: 8px 0 0;">Pages read / total pages</span>
+          <input type="number" id="set-current-page" min="0" placeholder="0">
+          <input type="number" id="set-current-total" min="1" placeholder="272">
+        </div>
+      </div>
+      <div class="set-field">
+        <label for="set-recent-reads">Recent reads (one per line, helps recommendations)</label>
+        <textarea id="set-recent-reads" rows="5" placeholder="Careless People — Sarah Wynn-Williams&#10;Heart The Lover — Lily King&#10;Piglet — Lottie Hazell"></textarea>
+      </div>
+      <div class="set-field">
+        <label for="set-favourite-authors">Favourite authors (comma-separated)</label>
+        <input type="text" id="set-favourite-authors" placeholder="Lily King, Lottie Hazell, Sally Rooney">
+      </div>
+    </div>
+
+    <div class="set-group">
+      <div class="sec-head"><span class="label">Shops to track</span><span class="rule"></span></div>
+      <div class="set-field">
+        <label>Currently tracking</label>
+        <div class="set-checks" data-set="shops-track">
+          <label class="set-check"><input type="checkbox" value="reiss"> Reiss</label>
+          <label class="set-check"><input type="checkbox" value="massimo"> Massimo Dutti</label>
+          <label class="set-check"><input type="checkbox" value="arket"> Arket</label>
+          <label class="set-check"><input type="checkbox" value="cos"> COS</label>
+          <label class="set-check"><input type="checkbox" value="meem"> ME+EM</label>
+        </div>
+        <span class="hint">To add more brands, edit the SHOPS_DATA block near the top of the HTML file.</span>
+      </div>
+    </div>
+
+    <div class="set-group">
+      <div class="sec-head"><span class="label">Markets to show</span><span class="rule"></span></div>
+      <div class="set-field">
+        <label>Indicators</label>
+        <div class="set-checks" data-set="markets-show">
+          <label class="set-check"><input type="checkbox" value="ftse"> FTSE 100</label>
+          <label class="set-check"><input type="checkbox" value="sp"> S&amp;P 500</label>
+          <label class="set-check"><input type="checkbox" value="nasdaq"> Nasdaq</label>
+          <label class="set-check"><input type="checkbox" value="stoxx"> Euro Stoxx 50</label>
+          <label class="set-check"><input type="checkbox" value="nikkei"> Nikkei</label>
+          <label class="set-check"><input type="checkbox" value="gbpusd"> GBP/USD</label>
+          <label class="set-check"><input type="checkbox" value="gbpeur"> GBP/EUR</label>
+          <label class="set-check"><input type="checkbox" value="gold"> Gold</label>
+          <label class="set-check"><input type="checkbox" value="brent"> Brent</label>
+          <label class="set-check"><input type="checkbox" value="gilt"> UK 10-yr gilt</label>
+          <label class="set-check"><input type="checkbox" value="btc"> Bitcoin</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-save-bar">
+      <button class="btn-ghost" id="set-reset">Reset all</button>
+      <div style="display:flex;gap:12px;align-items:center;">
+        <span class="save-toast" id="save-toast">Saved</span>
+        <button class="btn-primary" id="set-save">Save</button>
+      </div>
+    </div>
+
+  </div><!-- /settings -->
+
+</main>
+
+<script>
+  /* =====================================================
+     Morning Dashboard for Rhia — v2
+     Single file, mobile-first, works offline (localStorage).
+
+     ── Live-data plan (all mocked below, tagged MOCK) ──
+       Weather:   Open-Meteo (no key)      https://open-meteo.com
+       TfL:       TfL Unified API          https://api.tfl.gov.uk
+       News:      Guardian Open Platform / RSS
+       Football:  football-data.org (free)
+       Markets:   Yahoo Finance chart API
+     ===================================================== */
+
+  /* ─── SHOPS_DATA — EDIT WEEKLY ──────────────────────
+     Format: [{ name, status: 'sale' | 'outlet' | 'none',
+                note, discount, url, hot: bool }]
+     'hot' shows a red "ENDS SOON" pill (use for
+     time-limited offers ending within ~5 days).
+     ──────────────────────────────────────────────── */
+  const SHOPS_DATA = {
+    updated: "2026-08-21",
+    shops: [
+      {
+        id: "cos",
+        name: "COS",
+        status: "sale",
+        note: "Limited offer, selected items — ends Sun 23 Aug",
+        discount: "up to 25%",
+        url: "https://www.cos.com/en-gb/women/sale",
+        hot: true
+      },
+      {
+        id: "arket",
+        name: "Arket",
+        status: "sale",
+        note: "Summer sale, women's & homeware",
+        discount: "up to 50%",
+        url: "https://www.arket.com/en_gbp/women/sale.html",
+        hot: false
+      },
+      {
+        id: "massimo",
+        name: "Massimo Dutti",
+        status: "sale",
+        note: "Summer sale — Bank Holiday event added",
+        discount: "up to 40%",
+        url: "https://www.massimodutti.com/gb/women",
+        hot: false
+      },
+      {
+        id: "reiss",
+        name: "Reiss",
+        status: "outlet",
+        note: "Bicester Village until 28 Aug · online outlet ongoing",
+        discount: "up to 40%",
+        url: "https://www.reiss.com/sales",
+        hot: false
+      },
+      {
+        id: "meem",
+        name: "ME+EM",
+        status: "sale",
+        note: "Late-summer sale — dresses, knitwear, tailoring",
+        discount: "up to 60%",
+        url: "https://www.meandem.com/uk/sale",
+        hot: false
+      }
+      // To add more brands: paste a new object above and add its `id`
+      // to the shopsTrack list in DEFAULTS. Then add a matching
+      // checkbox in the Settings shops-track section of the HTML.
+    ]
+  };
+
+  /* ─── Default settings ──────────────────────────── */
+  const DEFAULTS = {
+    name: "Rhia",
+    leaveTime: "07:00",
+    newsTopics: ["current", "us", "london", "business"],
+    newsAvoid: [],
+    currentBook: {
+      title: "Piglet",
+      author: "Lottie Hazell",
+      page: 132,
+      total: 288
+    },
+    recentReads: [
+      "Careless People — Sarah Wynn-Williams",
+      "Heart The Lover — Lily King",
+      "Yesteryear",
+      "Piglet — Lottie Hazell",
+      "The Correspondent"
+    ].join("\n"),
+    favouriteAuthors: "Lily King, Lottie Hazell, Sarah Wynn-Williams",
+    shopsTrack: ["reiss", "massimo", "arket", "cos", "meem"],
+    marketsShow: ["ftse","sp","nasdaq","stoxx","nikkei","gbpusd","gbpeur","gold","brent","gilt","btc"]
+  };
+
+  const SETTINGS_KEY = "rhia-settings-v2";
+  const loadSettings = () => {
+    try { return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}") }; }
+    catch { return { ...DEFAULTS }; }
+  };
+  const saveSettings = (s) => localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  let settings = loadSettings();
+
+  /* ─── Time / dateline / edition ─────────────────── */
+  const now = new Date();
+  const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  document.getElementById("dateline").innerHTML =
+    `${dayNames[now.getDay()]}, ${now.getDate()} ${monthNames[now.getMonth()]} ${now.getFullYear()}<span class="dot">·</span>London`;
+
+  const firstRun = localStorage.getItem("rhia-first-run");
+  if (!firstRun) localStorage.setItem("rhia-first-run", now.toISOString());
+  const start = new Date(localStorage.getItem("rhia-first-run"));
+  const dayNo = Math.floor((now - start) / 86400000) + 1;
+  document.getElementById("edition-no").textContent = `Vol. I · No. ${String(dayNo).padStart(3, "0")}`;
+
+  /* ─── Tabs ──────────────────────────────────────── */
+  const tabs = document.querySelectorAll('[role="tab"]');
+  const panels = document.querySelectorAll('[role="tabpanel"]');
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.setAttribute("aria-selected", "false"));
+      panels.forEach(p => p.classList.remove("active"));
+      tab.setAttribute("aria-selected", "true");
+      document.getElementById(tab.getAttribute("aria-controls")).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
+  });
+
+  /* ─── Leave-time countdown + umbrella ───────────── */
+  // Weather MOCK — replace with Open-Meteo forecast at settings.leaveTime
+  const WEATHER = {
+    tempAtLeave: 17,
+    condition: "Overcast, dry until noon",
+    umbrella: false,
+    sunrise: "05:58",
+    sunset: "20:14"
+  };
+
+  // TODO next iteration (Jake, 2026-08-24):
+  //   Add sunset alongside sunrise in the leave-strip aux line,
+  //   e.g. "Umbrella: no · sunrise 05:58 · sunset 20:14".
+  function updateLeaveStrip() {
+    const [lh, lm] = settings.leaveTime.split(":").map(Number);
+    const leave = new Date();
+    leave.setHours(lh, lm, 0, 0);
+    const now2 = new Date();
+    const diff = leave - now2;
+    const primary = document.getElementById("leave-primary");
+    if (diff <= 0 || diff > 5 * 3600 * 1000) {
+      primary.innerHTML = `Your day starts at <strong>${settings.leaveTime}</strong>`;
+    } else {
+      const mins = Math.floor(diff / 60000);
+      const h = Math.floor(mins / 60);
+      const m = mins % 60;
+      const label = h > 0 ? `${h}h ${m}m` : `${m}m`;
+      primary.innerHTML = `Leave in <strong>${label}</strong>`;
+    }
+    const umb = WEATHER.umbrella ? "yes" : "no";
+    document.getElementById("leave-aux").innerHTML =
+      `Umbrella: ${umb}<span class="sep">·</span>sunrise ${WEATHER.sunrise}`;
+  }
+  updateLeaveStrip();
+  setInterval(updateLeaveStrip, 60000);
+
+  document.getElementById("weather-temp").innerHTML =
+    `${WEATHER.tempAtLeave}<span class="unit">°C</span>`;
+  document.getElementById("weather-sub").textContent = WEATHER.condition;
+
+  /* ─── Northern line status (MOCK — wire TfL) ────── */
+  const NL_STATUS = "Good service"; // MOCK
+  const NL_SUB = "Both branches, all stations";
+  const nlDot = document.getElementById("nl-dot");
+  const alertBanner = document.getElementById("alert-banner");
+  if (NL_STATUS === "Good service") {
+    nlDot.classList.remove("warn","bad");
+  } else if (/severe|suspended|closed/i.test(NL_STATUS)) {
+    nlDot.classList.add("bad");
+    alertBanner.classList.add("active");
+    document.getElementById("alert-text").textContent =
+      `Northern line — ${NL_STATUS.toLowerCase()}. Consider Victoria via bus, or Uber.`;
+  } else {
+    nlDot.classList.add("warn");
+  }
+
+  /* ─── Shops ─────────────────────────────────────── */
+  function renderShops() {
+    const container = document.getElementById("shops-list");
+    const tracked = new Set(settings.shopsTrack);
+    const shown = SHOPS_DATA.shops.filter(s => tracked.has(s.id));
+
+    if (shown.length === 0) {
+      container.innerHTML = '<p class="shop-empty">No shops selected. Add some in Settings.</p>';
+      document.getElementById("shops-updated").textContent = "";
+      return;
+    }
+
+    container.innerHTML = shown.map(s => {
+      const isNone = s.status === "none";
+      const label = isNone ? "Full price" : (s.status === "outlet" ? "Outlet" : "Sale");
+      const value = isNone ? "—" : s.discount;
+      return `
+        <a class="shop-row${isNone ? ' no-sale' : ''}" href="${s.url}" target="_blank" rel="noopener">
+          <div>
+            <span class="shop-name">
+              ${s.name}
+              ${!isNone && s.hot ? '<span class="hot-pill">Ends soon</span>' : ''}
+            </span>
+            <span class="shop-note">${s.note || 'No current sale'}</span>
+          </div>
+          <div class="shop-disc">
+            <span class="lbl">${label}</span>
+            ${value}
+          </div>
+        </a>
+      `;
+    }).join("");
+
+    const updated = new Date(SHOPS_DATA.updated);
+    const daysAgo = Math.floor((Date.now() - updated.getTime()) / 86400000);
+    const ago = daysAgo === 0 ? "today" : daysAgo === 1 ? "yesterday" : `${daysAgo} days ago`;
+    document.getElementById("shops-updated").textContent = `Sales updated ${ago}. Prices shown as brands' current headline offers.`;
+  }
+  renderShops();
+
+  /* ─── Currently reading ─────────────────────────── */
+  function renderReading() {
+    const box = document.getElementById("reading-now");
+    const b = settings.currentBook;
+    if (!b || !b.title) {
+      box.innerHTML = `
+        <p class="lbl">You're reading</p>
+        <p class="empty">Nothing set — <a href="#" id="reading-add-link">add a book in Settings</a> to track progress.</p>
+      `;
+      document.getElementById("reading-add-link").addEventListener("click", (e) => {
+        e.preventDefault();
+        document.getElementById("tab-settings").click();
+        setTimeout(() => document.getElementById("set-current-title").focus(), 100);
+      });
+      return;
+    }
+    const pct = b.total > 0 ? Math.min(100, Math.round((b.page / b.total) * 100)) : 0;
+    // Estimate: ~1 page per minute of reading; Rhia commutes ~25 min each way = 50 min/day = ~50 pages
+    // Round to tube journeys (25 pages each)
+    const pagesLeft = Math.max(0, b.total - b.page);
+    const journeys = Math.ceil(pagesLeft / 25);
+    box.innerHTML = `
+      <p class="lbl">You're reading</p>
+      <p class="title">${b.title} <span class="author">· ${b.author}</span></p>
+      <div class="progress-wrap">
+        <div class="bar"><div class="fill" style="width: ${pct}%;"></div></div>
+        <div class="pct">${pct}%</div>
+      </div>
+      <p class="tube-est">≈ ${journeys} tube journey${journeys === 1 ? "" : "s"} to the end</p>
+      <div class="controls">
+        <button id="reading-add-page">+ 20 pages</button>
+        <button id="reading-finished">Mark finished</button>
+      </div>
+    `;
+    document.getElementById("reading-add-page").addEventListener("click", () => {
+      settings.currentBook.page = Math.min(settings.currentBook.total, settings.currentBook.page + 20);
+      saveSettings(settings);
+      renderReading();
+    });
+    document.getElementById("reading-finished").addEventListener("click", () => {
+      const finished = `${settings.currentBook.title} — ${settings.currentBook.author}`;
+      settings.recentReads = (finished + "\n" + (settings.recentReads || "")).trim();
+      settings.currentBook = { title: "", author: "", page: 0, total: 0 };
+      saveSettings(settings);
+      renderReading();
+    });
+  }
+  renderReading();
+
+  /* ─── Pick of the day / week ahead ──────────────── */
+  // MOCK curated events. Rotate by day of week; Friday shows a mini week-ahead.
+  const PICKS_BY_DAY = {
+    // Mon-Thu: single pick
+    1: { cat: "Podcast · Weekly", h: "The Rest Is Politics — Monday briefing", d: "Rory and Alastair on what to watch this week in Westminster and beyond. Roughly 45 minutes, perfect for the tube in and out.", w: "Any podcast app · free" },
+    2: { cat: "Long read · This week", h: "The Ministry of Truth", d: "New Yorker essay on generative-AI moderation policy — sharp, dense, and worth the 25 minutes.", w: "newyorker.com" },
+    3: { cat: "London · Culture", h: "Tate Modern late — Turbine Hall commission opens", d: "The autumn commission unveils tonight. Free after 6pm on Wednesdays.", w: "Tate Modern, Bankside" },
+    4: { cat: "Book · New release", h: "Blue Sisters — Coco Mellors", d: "Just out in paperback. Three sisters, one death — sharp, contemporary, and firmly in the Piglet / Heart the Lover neighbourhood.", w: "Waterstones · £9.99" },
+    // Friday: week ahead
+    5: null,
+    // Weekend
+    0: { cat: "Sunday · London", h: "Columbia Road Flower Market", d: "Best before 10am — coffee at Lily Vanilli next door, then walk east into Broadway Market for lunch.", w: "E2 7RG · 8am–3pm" },
+    6: { cat: "Saturday · London", h: "Yoshitomo Nara at the Hayward Gallery", d: "The first major UK survey of Nara's quietly rebellious portraits. Runs until 31 August — worth booking today.", w: "Hayward Gallery, SE1 · £22" }
+  };
+
+  const WEEK_AHEAD = [
+    { when: "Tonight", what: "Yoshitomo Nara at the Hayward Gallery", where: "Southbank · £22 · closes 31 Aug" },
+    { when: "Saturday", what: "Arsenal away at Newcastle", where: "St James' Park · 17:30 · Sky Sports" },
+    { when: "Sunday", what: "Columbia Road Flower Market + Broadway Market lunch", where: "E2 · from 8am" },
+    { when: "Mon 25 Aug", what: "Summer Bank Holiday — no work", where: "Massimo Dutti Bank Holiday sale peaks" },
+    { when: "Wed 27 Aug", what: "Notting Hill Carnival family day", where: "W10 · from 10am" }
+  ];
+
+  function renderPick() {
+    const dow = now.getDay();
+    const box = document.getElementById("pick-content");
+    if (dow === 5) {
+      document.getElementById("pick-label").textContent = "The week ahead";
+      box.innerHTML = WEEK_AHEAD.map(item => `
+        <div class="week-item">
+          <div class="when">${item.when}</div>
+          <div class="what">${item.what}</div>
+          <div class="where">${item.where}</div>
+        </div>
+      `).join("");
+    } else {
+      const p = PICKS_BY_DAY[dow];
+      if (!p) { box.innerHTML = ""; return; }
+      document.getElementById("pick-label").textContent = "Pick of the day";
+      box.innerHTML = `
+        <div class="pick">
+          <span class="cat">${p.cat}</span>
+          <h3>${p.h}</h3>
+          <p class="dek">${p.d}</p>
+          <p class="where">${p.w}</p>
+        </div>
+      `;
+    }
+  }
+  renderPick();
+
+  /* ─── To-do ─────────────────────────────────────── */
+  const STORAGE_KEY = "rhia-todos-v1";
+  const todoInput = document.getElementById("todo-input");
+  const todoAddBtn = document.getElementById("todo-add-btn");
+  const todoList = document.getElementById("todo-list");
+
+  const loadTodos = () => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); } catch { return []; } };
+  const saveTodos = (t) => localStorage.setItem(STORAGE_KEY, JSON.stringify(t));
+
+  function renderTodos() {
+    const todos = loadTodos();
+    todoList.innerHTML = "";
+    if (todos.length === 0) {
+      const empty = document.createElement("li");
+      empty.className = "todo-empty";
+      empty.textContent = "Nothing on the list yet.";
+      todoList.appendChild(empty);
+      return;
+    }
+    todos.sort((a, b) => (a.done ? 1 : 0) - (b.done ? 1 : 0));
+    todos.forEach(todo => {
+      const li = document.createElement("li");
+      li.className = "todo-item" + (todo.done ? " done" : "");
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.className = "todo-check";
+      check.checked = todo.done;
+      check.addEventListener("change", () => {
+        const ts = loadTodos();
+        const t = ts.find(x => x.id === todo.id);
+        if (t) { t.done = check.checked; saveTodos(ts); renderTodos(); }
+      });
+      const text = document.createElement("span");
+      text.className = "todo-text";
+      text.textContent = todo.text;
+      const del = document.createElement("button");
+      del.className = "todo-del";
+      del.innerHTML = "×";
+      del.addEventListener("click", () => {
+        saveTodos(loadTodos().filter(x => x.id !== todo.id));
+        renderTodos();
+      });
+      li.append(check, text, del);
+      todoList.appendChild(li);
+    });
+  }
+  function addTodo() {
+    const t = todoInput.value.trim();
+    if (!t) return;
+    const todos = loadTodos();
+    todos.push({ id: Date.now().toString(36), text: t, done: false });
+    saveTodos(todos);
+    todoInput.value = "";
+    renderTodos();
+  }
+  todoAddBtn.addEventListener("click", addTodo);
+  todoInput.addEventListener("keydown", e => { if (e.key === "Enter") addTodo(); });
+  renderTodos();
+
+  /* ─── Markets countdown ─────────────────────────── */
+  function updateMktOpen() {
+    const el = document.getElementById("mkt-open");
+    if (!el) return;
+    const n = new Date();
+    const open = new Date(n);
+    open.setHours(8, 0, 0, 0);
+    if (n >= open) { el.textContent = "open"; return; }
+    const mins = Math.floor((open - n) / 60000);
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    el.textContent = h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+  updateMktOpen();
+  setInterval(updateMktOpen, 60000);
+
+  /* ─── Last updated ──────────────────────────────── */
+  const pad = n => String(n).padStart(2, "0");
+  document.getElementById("last-updated").textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+
+  /* ─── Settings UI ───────────────────────────────── */
+  function populateSettings() {
+    document.getElementById("set-name").value = settings.name || "";
+    document.getElementById("set-leave").value = settings.leaveTime || "07:00";
+    document.getElementById("set-current-title").value = settings.currentBook?.title || "";
+    document.getElementById("set-current-author").value = settings.currentBook?.author || "";
+    document.getElementById("set-current-page").value = settings.currentBook?.page || "";
+    document.getElementById("set-current-total").value = settings.currentBook?.total || "";
+    document.getElementById("set-recent-reads").value = settings.recentReads || "";
+    document.getElementById("set-favourite-authors").value = settings.favouriteAuthors || "";
+
+    // Checkboxes
+    const setChecks = (attr, values) => {
+      document.querySelectorAll(`[data-set="${attr}"] input[type="checkbox"]`).forEach(cb => {
+        cb.checked = values.includes(cb.value);
+        cb.closest(".set-check").classList.toggle("on", cb.checked);
+      });
+    };
+    setChecks("news-topics", settings.newsTopics || []);
+    setChecks("news-avoid", settings.newsAvoid || []);
+    setChecks("shops-track", settings.shopsTrack || []);
+    setChecks("markets-show", settings.marketsShow || []);
+  }
+
+  // Live toggle styling for check pills
+  document.querySelectorAll(".set-check input[type='checkbox']").forEach(cb => {
+    cb.addEventListener("change", () => {
+      cb.closest(".set-check").classList.toggle("on", cb.checked);
+    });
+  });
+
+  document.getElementById("set-save").addEventListener("click", () => {
+    const getChecked = (attr) => Array.from(
+      document.querySelectorAll(`[data-set="${attr}"] input:checked`)
+    ).map(cb => cb.value);
+
+    settings = {
+      ...settings,
+      name: document.getElementById("set-name").value.trim() || "Rhia",
+      leaveTime: document.getElementById("set-leave").value || "07:00",
+      newsTopics: getChecked("news-topics"),
+      newsAvoid: getChecked("news-avoid"),
+      currentBook: {
+        title: document.getElementById("set-current-title").value.trim(),
+        author: document.getElementById("set-current-author").value.trim(),
+        page: parseInt(document.getElementById("set-current-page").value, 10) || 0,
+        total: parseInt(document.getElementById("set-current-total").value, 10) || 0
+      },
+      recentReads: document.getElementById("set-recent-reads").value.trim(),
+      favouriteAuthors: document.getElementById("set-favourite-authors").value.trim(),
+      shopsTrack: getChecked("shops-track"),
+      marketsShow: getChecked("markets-show")
+    };
+    saveSettings(settings);
+
+    // Re-render affected sections
+    document.getElementById("reader-name").textContent = settings.name;
+    renderShops();
+    renderReading();
+    updateLeaveStrip();
+
+    const toast = document.getElementById("save-toast");
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1600);
+  });
+
+  document.getElementById("set-reset").addEventListener("click", () => {
+    if (!confirm("Reset all settings, tasks, and reading progress?")) return;
+    localStorage.removeItem(SETTINGS_KEY);
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
+
+  populateSettings();
+  document.getElementById("reader-name").textContent = settings.name;
+</script>
+
+</body>
+</html>
